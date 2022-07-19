@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" id="ipt">
+    <script>
+        /**
+         * 防抖：每隔一段时间触发，只执行最后一次
+         * 常见使用场景：搜索框
+        */
+        function ajax() {
+            console.log(this.value);
+        }
+
+        // 防抖函数
+        function debouce(callback, delay) {
+            let timer = null;   // 作用防止请求堆积
+            return function () {
+                clearTimeout(timer);    // 在每次请求之前，先清空一下定时器，确保只发送最后一次请求
+                timer = setTimeout(() => {
+                    /* 之所以修改this指向，是因为我们产生了闭包，
+                    this指向现在为undefined，所以要修改this指向 */
+                    // callback.call(this, arguments);
+                    // callback.bind(this, arguments)();
+                    callback.apply(this, [arguments]);
+                }, delay)
+            }
+        }
+
+        ipt.oninput = debouce(ajax, 1000);
+    </script>
+</body>
+
+</html>

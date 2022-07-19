@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- 节流：使用场景：比如说要抢购商品  
+    我们一般的话都是靠手速，而有一些人就会利用我们软件的漏洞，
+    写脚本一秒点击抢购按钮10000次，
+    那么这样来看，我们的服务器极大可能会处于崩溃的状态，
+    一旦崩溃会给公司造成很大一个的损失，所以就产生了节流。
+    节流的话：大白话来说就是：每隔一段时间触发一次。
+    这样就可以防止有人利用脚本一秒点击10000次的情况。 -->
+    <button id="btn">点我加一</button>
+    <div id="show">0</div>
+    <script>
+        // button按钮每次  +1
+        function increment() {
+            show.innerHTML = Number(show.innerHTML) + 1;
+        }
+
+        // 节流
+        function throttle(callback, wait) {
+            // 上一次点击的时间
+            let lastTime = 0;
+            return function () {    // 如果不return的话会立即执行，return的话就是点击才会调用此方法
+                // 获取当前点击的时间
+                let nowTime = new Date().getTime()
+                // 判断当前点击的时间 - 上一次点击的时间  是否  大于1秒
+                if (nowTime - lastTime > wait) {
+                    callback.call(this, arguments);
+                    // callback.bind(this, arguments)();
+                    // callback.apply(this, [arguments]);
+                    // 把当前点击的时候  赋值给上一次的时间
+                    lastTime = nowTime;
+                }
+            }
+        }
+
+        btn.onclick = throttle(increment, 1000);
+
+
+        /**
+         * 当我点击完button之后，会触发fn()函数吗？
+         * 答案不是的，在你还没有点击的时候就会立即执行，
+         * 原因：函数名加小括号是调用函数，函数调用立即执行，
+         * 所以这样写节流是不对的。
+         * **/
+        // function fn() {
+        //     alert('哈哈哈');
+        // }
+        // btn.onclick = fn(); 
+
+
+        /**
+         * 看了上面的案例，其实就是函数的一个调用，
+         * 如果想调用而不直接调用这个函数，在我们点击button按钮的时候只需要写一个函数名即可
+         * **/
+        // function fn() {
+        //     alert('哈哈哈');
+        // }
+        // btn.onclick = fn;
+
+        /**
+         * 但是如果你想要button点击时，每隔一段时间就调用一下这个throttle函数，并且传参如何实现呢？
+         * 我们只需要在throttle函数里面再return 一层函数,好下面我们实现一下节流的一个操作
+         * **/
+        // button按钮每次  +1
+        function increment() {
+            show.innerHTML = Number(show.innerHTML) + 1;
+        }
+        function throttle(callback, awaitTime) {
+            let lastTime = 0;   // 上一次点击时间
+            return function () {
+                // 获取当前时间
+                let nowTime = new Date().getTime();
+                // 判断当前时间减去上一次点击时间是否大于我们想要等待的时间
+                // 小于则不能再次点击，大于则可以继续点击button按钮
+                if (nowTime - lastTime > awaitTime) {
+                    // 调用button点击事件
+                    callback();
+                    //    每次点击完毕之后呢，我们都要重新给上一次的时间进行赋值
+                    lastTime = nowTime;
+                }
+            }
+        }
+        btn.onclick = throttle(increment, 1000);
+        /* 第一个参数是一个每秒只能点一次的一个函数
+        第二个参数是我们每隔几秒能点一次的一个时间 */
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
